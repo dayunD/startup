@@ -63,7 +63,7 @@
     }
     button{
       border:1px solid var(--line);
-      background:#fff;
+      background:#cddbf2;
       color:var(--text);
       border-radius:12px;
       padding:10px 12px;
@@ -424,7 +424,7 @@
                     <option value="지역·오프라인">지역·오프라인</option>
                     <option value="기타">기타</option>
                   </select>
-                  <input class="field other hidden" name="industryOther" id="industryOther" placeholder="창업 세부 업종을 입력" />
+                  <input class="field other hidden" name="industryOther" id="industryOther" placeholder="창업 세부 업종 입력" />
                 </div>
               </td>
             </tr>
@@ -453,7 +453,7 @@
                     <option value="온라인 고객">온라인 고객</option>
                     <option value="기타">기타</option>
                   </select>
-                  <input class="field other hidden" name="targetOther" id="targetOther" placeholder="창업 타겟을 입력" />
+                  <input class="field other hidden" name="targetOther" id="targetOther" placeholder="창업 타겟 입력" />
                 </div>
               </td>
             </tr>
@@ -483,7 +483,7 @@
               <th style="width:140px;">대표 상품</th>
               <td><input class="field" name="mainProduct" placeholder="예: 교육 서비스" /></td>
               <th style="width:140px;">판매가(원)</th>
-              <td><input class="field mono num" name="mainPrice" data-format="comma" inputmode="numeric" placeholder="숫자 입력" /></td>
+              <td><input class="field mono num" name="mainPrice" data-format="comma" inputmode="numeric" placeholder="금액 입력" /></td>
             </tr>
           </table>
 
@@ -716,7 +716,7 @@
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><input class="field" name="oName" placeholder="예: 옵션 추가" value="${(row.name||'').replaceAll('"','&quot;')}" /></td>
-        <td class="right"><input class="field mono num" name="oPrice" data-format="comma" inputmode="numeric" placeholder="예: 숫자 입력" value="${row.price||''}" /></td>
+        <td class="right"><input class="field mono num" name="oPrice" data-format="comma" inputmode="numeric" placeholder="금액 입력" value="${row.price||''}" /></td>
         <td class="right col-action"><button type="button" class="no-capture" data-role="delOpt">삭제</button></td>
       `;
       const priceEl = $('input[name="oPrice"]', tr);
@@ -745,8 +745,8 @@
           </select>
         </td>
         <td><input class="field" name="bItem" placeholder="예: 세부 내용 입력" value="${(row.item||'').replaceAll('"','&quot;')}" /></td>
-        <td class="right"><input class="field mono num" name="bCost" data-format="comma" inputmode="numeric" placeholder="0" value="${row.cost||''}"/></td>
-        <td class="right"><input class="field mono num" name="bQty" inputmode="numeric" placeholder="1" value="${row.qty||''}"/></td>
+        <td class="right"><input class="field mono num" name="bCost" data-format="comma" inputmode="numeric" placeholder="금액" value="${row.cost||''}"/></td>
+        <td class="right"><input class="field mono num" name="bQty" inputmode="numeric" placeholder="수량" value="${row.qty||''}"/></td>
         <td class="right"><strong class="mono" data-role="rowSum">0원</strong></td>
         <td class="right col-action"><button type="button" class="no-capture" data-role="delRow">삭제</button></td>
       `;
