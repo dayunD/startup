@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>스타트업 설계</title>
+
+  <style>
+    :root{
+      --bg:#f6f9ff;
+      --card:#ffffff;
+      --line:#dbe6ff;
+      --text:#0f172a;
+      --muted:#475569;
+      --muted2:#64748b;
+      --blue:#2f6feb;
+      --blue2:#1d4ed8;
+      --shadow: 0 10px 28px rgba(15, 23, 42, .08);
+      --radius:16px;
+    }
+    *{ box-sizing:border-box; }
+
+    html, body{ background:#fff; } /* ✅ 캡처 포함 기본 배경 안정화 */
+
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 420px at 20% 0%, #eaf2ff 0%, transparent 60%),
+        radial-gradient(900px 420px at 80% 10%, #edf6ff 0%, transparent 55%),
+        var(--bg);
+    }
+
+    /* ✅ 모바일에서 좌우 잘림 방지 핵심 */
+    html, body{
+      width:100%;
+      max-width:100%;
+      overflow-x:hidden;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    .wrap{ max-width:1100px; margin:18px auto 70px; padding:0 16px; }
+
+    /* 배너 이미지 */
+    .banner{
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      background:#fff;
+    }
+    .banner img{ display:block; width:100%; height:auto; }
+
+    /* Toolbar */
+    .toolbar{
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    button{
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:950;
+      cursor:pointer;
+      box-shadow: 0 8px 20px rgba(15,23,42,.05);
+      white-space:nowrap;
+      touch-action: manipulation;
+    }
+    button.primary{
+      background:linear-gradient(90deg, var(--blue2), var(--blue));
+      color:#fff;
+      border-color: rgba(29,78,216,.3);
+    }
+
+    .grid{ margin-top:12px; display:grid; gap:12px; }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      max-width:100%;
+    }
+    details summary{
+      list-style:none;
+      cursor:pointer;
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      user-select:none;
+      background:linear-gradient(90deg, rgba(47,111,235,.08), transparent);
+      border-bottom:1px solid var(--line);
+    }
+    details summary::-webkit-details-marker{ display:none; }
+    .sum-left{ display:flex; align-items:center; gap:10px; min-width:0; }
+    .step{
+      width:30px; height:30px;
+      border-radius:10px;
+      display:grid; place-items:center;
+      font-weight:980;
+      background:#eaf2ff;
+      border:1px solid var(--line);
+      color:var(--blue2);
+      flex:0 0 auto;
+    }
+    .sum-title{ font-weight:980; letter-spacing:-.3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .content{ padding:14px 16px 16px; }
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#fff;
+    }
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid #eef2ff;
+      font-size:13px;
+      vertical-align:middle;
+    }
+    th{
+      background:#f2f6ff;
+      color:#1f2a44;
+      font-weight:980;
+      white-space:nowrap;
+    }
+    tr:last-child td{ border-bottom:0; }
+
+    .field{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid #dbe6ff;
+      background:#fbfdff;
+      outline:none;
+      font-weight:850;
+      color:var(--text);
+      max-width:100%;
+    }
+    .field::placeholder{ color:#94a3b8; font-weight:850; }
+    .field:focus{
+      border-color: rgba(47,111,235,.55);
+      box-shadow:0 0 0 4px rgba(47,111,235,.12);
+      background:#fff;
+    }
+    select.field{ cursor:pointer; }
+
+    .mono{ font-variant-numeric: tabular-nums; font-feature-settings:"tnum"; }
+    .num{ text-align:right; }
+    .right{ text-align:right; white-space:nowrap; }
+
+    .inline{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .inline > *{ min-width:0; }
+    .inline .field{ flex:1; }
+    .inline .other{ flex:1; }
+    .hidden{ display:none; }
+
+    textarea.field{
+      line-height:1.55;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+      resize:none;
+      min-height:110px;
+      overflow:hidden;
+    }
+
+    /* 예산 레이아웃 */
+    .budget-grid{
+      display:grid;
+      grid-template-columns: 1.55fr 0.45fr;
+      gap:12px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .budget-grid{ grid-template-columns:1fr; }
+    }
+    .chart-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      box-shadow: 0 10px 24px rgba(15,23,42,.05);
+      position: sticky;
+      top: 12px;
+    }
+    @media (max-width: 980px){
+      .chart-card{ position: static; }
+    }
+    .chart-title{ margin:0 0 8px; font-weight:980; letter-spacing:-.3px; }
+
+    .hint{
+      margin:6px 2px 12px;
+      font-size:12px;
+      color:var(--muted2);
+      font-weight:850;
+    }
+    .hint strong{ color:#334155; font-weight:980; }
+
+    .remain-sub{
+      display:block;
+      margin-top:4px;
+      font-size:12px;
+      color:#64748b;
+      font-weight:900;
+      text-align:right;
+      white-space:nowrap;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.92);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 980;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+      z-index: 9999;
+    }
+    .toast.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
+
+    /* ===== 캡처 모드(PNG) ===== */
+    body.capture-mode{ background:#fff !important; }
+    body.capture-mode, body.capture-mode html{ background:#fff !important; }
+    body.capture-mode #appBanner{ display:none !important; }
+    body.capture-mode .toolbar{ display:none !important; }
+    body.capture-mode .col-action{ display:none !important; }
+    body.capture-mode .no-capture{ display:none !important; }
+
+    body.capture-mode #appRoot,
+    body.capture-mode .wrap,
+    body.capture-mode .grid{
+      background:#fff !important;
+    }
+    body.capture-mode .card,
+    body.capture-mode table{
+      background:#fff !important;
+    }
+
+    body.capture-mode details summary{
+      background:#ffffff !important;
+      background-image:none !important;
+    }
+    body.capture-mode .card{
+      box-shadow:none !important;
+    }
+    body.capture-mode .step{
+      background:#ffffff !important;
+    }
+
+    .ta-mirror{
+      width:100%;
+      border-radius:12px;
+      border:1px solid #dbe6ff;
+      background:#fbfdff;
+      padding:10px 10px;
+      font-weight:850;
+      color:var(--text);
+      line-height:1.55;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+      min-height:110px;
+    }
+    body.capture-mode textarea.field{
+      display:none !important;
+    }
+
+    /* =========================
+       ✅ 모바일 전용 UX 개선
+       - "표(table) 가로 4칸" 때문에 화면이 잘리던 문제 해결
+       - 모바일에서는 table을 카드형(세로)로 재배치
+       ========================= */
+    @media (max-width: 640px){
+      .wrap{ padding: 0 12px; margin: 12px auto 54px; }
+
+      details summary{ padding: 12px 12px; }
+      .content{ padding: 12px 12px 14px; }
+
+      .toolbar{ justify-content: stretch; gap:8px; }
+      .toolbar button{ flex: 1 1 calc(50% - 8px); padding: 11px 10px; }
+
+      th, td{ font-size: 13px; padding: 10px 10px; }
+      .field{ padding: 12px 12px; font-size: 14px; }
+      textarea.field{ min-height: 120px; }
+
+      /* ✅ 핵심: 모바일에서는 모든 table 행을 "세로 스택" */
+      table{ border-radius: 14px; }
+
+      /* 일반 정보 입력(4칸짜리) 테이블을 카드형으로 */
+      .content table tr{
+        display:grid;
+        grid-template-columns: 1fr;
+      }
+      .content table th{
+        display:block;
+        width:auto !important;
+        border-bottom:0;
+        border-top:1px solid #eef2ff;
+        background:#f2f6ff;
+      }
+      .content table td{
+        display:block;
+        width:auto !important;
+        border-bottom:0;
+      }
+      .content table tr:first-child th{
+        border-top:0;
+      }
+
+      /* ✅ "옵션 상품/예산" 같이 헤더가 있는 표는 가로 스크롤로 (행 UI는 유지) */
+      table thead{ display:none; }
+      #optionBody tr, #budgetBody tr{
+        display:grid;
+        grid-template-columns: 1fr;
+        gap:8px;
+        padding:10px 10px;
+        border-bottom:1px solid #eef2ff;
+      }
+      #optionBody tr td, #budgetBody tr td{
+        border-bottom:0 !important;
+        padding:0 !important;
+      }
+
+      /* 예산: 각 입력을 세로로 보기 좋게 */
+      #budgetBody tr td:nth-child(6),
+      #optionBody tr td:nth-child(3){
+        justify-self:end;
+      }
+
+      /* 숫자 오른쪽 정렬은 모바일에서 과하게 어색할 수 있어 보정 */
+      .num{ text-align:right; }
+
+      /* sticky 차트는 모바일에서 아래로 */
+      .chart-card{
+        position: static;
+        top:auto;
+      }
+
+      /* summary 타이틀이 길면 줄바꿈 허용 */
+      .sum-title{
+        white-space: normal;
+        line-height:1.2;
+      }
+    }
+
+    /* 더 작은 폰(아이폰 SE급) */
+    @media (max-width: 380px){
+      .toolbar button{ flex:1 1 100%; }
+      .field{ font-size: 14px; }
+      th{ font-size: 12px; }
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+
+<body>
+  <div class="wrap" id="appRoot">
+
+    <!-- 배너 이미지 -->
+    <div class="banner" id="appBanner">
+      <img src="banner.jpg" alt="창업 계획서 배너" />
+    </div>
+
+    <div class="toolbar">
+      <button id="btnExpandAll" type="button">모두 펼치기</button>
+      <button id="btnCollapseAll" type="button">모두 접기</button>
+      <button id="btnReset" type="button">초기화</button>
+      <button class="primary" id="btnSaveImage" type="button">이미지 저장</button>
+    </div>
+
+    <div class="grid" id="mainForm">
+      <!-- 1) 창업 정보 -->
+      <details class="card" data-step="1" open>
+        <summary>
+          <div class="sum-left">
+            <div class="step">1</div>
+            <div class="sum-title">창업 정보</div>
+          </div>
+        </summary>
+        <div class="content">
+          <table>
+            <tr>
+              <th style="width:140px;">창업 기업명</th>
+              <td><input class="field" name="companyName" id="companyName" placeholder="예: (주)에이블" /></td>
+              <th style="width:140px;">학번·이름</th>
+              <td><input class="field" name="members" placeholder="예: 10101 홍길동, 10719 송다윤" /></td>
+            </tr>
+
+            <tr>
+              <th>업종</th>
+              <td colspan="3">
+                <div class="inline">
+                  <select class="field" name="industry" id="industrySel">
+                    <option value="">선택</option>
+                    <option value="음식·카페">음식·카페</option>
+                    <option value="교육">교육</option>
+                    <option value="IT·앱·플랫폼">IT·앱·플랫폼</option>
+                    <option value="쇼핑·온라인 판매">쇼핑·온라인 판매</option>
+                    <option value="콘텐츠·미디어">콘텐츠·미디어</option>
+                    <option value="서비스">서비스</option>
+                    <option value="지역·오프라인">지역·오프라인</option>
+                    <option value="기타">기타</option>
+                  </select>
+                  <input class="field other hidden" name="industryOther" id="industryOther" placeholder="창업 세부 업종을 입력" />
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <th>위치</th>
+              <td><input class="field" name="location" placeholder="예: 대전광역시 서구 도안동" /></td>
+              <th>아이템 소개</th>
+              <td><input class="field" name="itemIntro" placeholder="예: 교육서비스 개발" /></td>
+            </tr>
+
+            <tr>
+              <th>타겟</th>
+              <td colspan="3">
+                <div class="inline">
+                  <select class="field" name="target" id="targetSel">
+                    <option value="">선택</option>
+                    <option value="초등학생">초등학생</option>
+                    <option value="중학생">중학생</option>
+                    <option value="고등학생">고등학생</option>
+                    <option value="대학생">대학생</option>
+                    <option value="직장인">직장인</option>
+                    <option value="학부모">학부모</option>
+                    <option value="지역 주민">지역 주민</option>
+                    <option value="시니어(노인)">시니어(노인)</option>
+                    <option value="온라인 고객">온라인 고객</option>
+                    <option value="기타">기타</option>
+                  </select>
+                  <input class="field other hidden" name="targetOther" id="targetOther" placeholder="창업 타겟을 입력" />
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <th>경쟁사 차별성</th>
+              <td colspan="3">
+                <textarea class="field" name="competitorDiff" id="competitorDiff"
+                  placeholder="예: 경쟁사의 단순한 프로그램→ 다양하고 전문성있는 프로그램 제공"></textarea>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </details>
+
+      <!-- 2) 판매 계획 -->
+      <details class="card" data-step="2" open>
+        <summary>
+          <div class="sum-left">
+            <div class="step">2</div>
+            <div class="sum-title">판매 계획</div>
+          </div>
+        </summary>
+        <div class="content">
+          <table>
+            <tr>
+              <th style="width:140px;">대표 상품</th>
+              <td><input class="field" name="mainProduct" placeholder="예: 교육 서비스" /></td>
+              <th style="width:140px;">판매가(원)</th>
+              <td><input class="field mono num" name="mainPrice" data-format="comma" inputmode="numeric" placeholder="숫자 입력" /></td>
+            </tr>
+          </table>
+
+          <div class="no-capture" style="margin-top:10px; display:flex; justify-content:flex-end;">
+            <button type="button" id="addOptionRow">옵션 상품 추가</button>
+          </div>
+
+          <table style="margin-top:10px;">
+            <thead>
+              <tr>
+                <th style="width:220px;">옵션 상품</th>
+                <th class="right" style="width:200px;">판매가(원)</th>
+                <th class="right col-action" style="width:90px;">작업</th>
+              </tr>
+            </thead>
+            <tbody id="optionBody"></tbody>
+          </table>
+
+          <table style="margin-top:10px;">
+            <tr>
+              <th style="width:200px;">판매 전략</th>
+              <td>
+                <textarea class="field" name="salesPlan" id="salesPlan" placeholder="예: 판매가 책정 기준과 그 이유"></textarea>
+              </td>
+            </tr>
+          </table>
+
+        </div>
+      </details>
+
+      <!-- 3) 예산 계획 -->
+      <details class="card" data-step="3" open>
+        <summary>
+          <div class="sum-left">
+            <div class="step">3</div>
+            <div class="sum-title">예산 계획</div>
+          </div>
+        </summary>
+        <div class="content">
+          <p class="hint"><strong>예산 항목</strong> 사업장 확보, 인력 고용, 마케팅, 시설 장비, 유지비</p>
+
+          <table>
+            <tr>
+              <th style="width:140px;">초기 자본(원)</th>
+              <td><input class="field mono num" name="seedMoney" data-format="comma" inputmode="numeric" placeholder="예: 100,000,000" /></td>
+              <th style="width:140px;">총 지출</th>
+              <td class="right"><strong class="mono" id="budgetTotal">0원</strong></td>
+              <th style="width:140px;">남은 금액</th>
+              <td class="right">
+                <strong class="mono" id="budgetRemain">0원</strong>
+                <span class="remain-sub" id="budgetRemainManwon">(0만원)</span>
+              </td>
+            </tr>
+          </table>
+
+          <div class="budget-grid" style="margin-top:12px;">
+            <div>
+              <table id="budgetTable">
+                <thead>
+                  <tr>
+                    <th style="width:160px;">예산 항목</th>
+                    <th>세부 항목</th>
+                    <th style="width:120px;" class="right">비용(원)</th>
+                    <th style="width:90px;" class="right">수량</th>
+                    <th style="width:130px;" class="right">합계(원)</th>
+                    <th style="width:90px;" class="right col-action">작업</th>
+                  </tr>
+                </thead>
+                <tbody id="budgetBody"></tbody>
+              </table>
+
+              <div class="no-capture" style="margin-top:10px; display:flex; justify-content:flex-end;">
+                <button type="button" id="addBudgetRow">항목 추가</button>
+              </div>
+
+              <table style="margin-top:10px;">
+                <tr>
+                  <th style="width:200px;">기준 및 이유</th>
+                  <td>
+                    <textarea class="field" name="biggestReason" id="biggestReason" placeholder="가장 돈이 많이 들어간 항목과 이유"></textarea>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="chart-card" id="chartCard">
+              <p class="chart-title">카테고리 비중</p>
+              <div id="pieSvgWrap" aria-label="pie chart"></div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </div>
+
+  <div class="toast" id="toast">저장됨</div>
+
+  <script>
+    const $ = (s, el=document)=>el.querySelector(s);
+    const $$ = (s, el=document)=>Array.from(el.querySelectorAll(s));
+    const STORAGE_KEY = 'startup_plan_compact_v11';
+
+    const fmtWon = (n)=> (Number.isFinite(n)?n:0).toLocaleString('ko-KR') + '원';
+    const toNum = (v)=>{
+      if(v===null||v===undefined) return 0;
+      const s = String(v).replace(/[^\d.-]/g,'');
+      const n = Number(s);
+      return Number.isFinite(n) ? n : 0;
+    };
+    const fmtManwon = (n)=>{
+      const man = Math.round((Number.isFinite(n)?n:0) / 10000);
+      return `(${man.toLocaleString('ko-KR')}만원)`;
+    };
+
+    const toast = (()=> {
+      const el = $('#toast'); let t=null;
+      return (msg='자동 저장됨')=>{
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(t);
+        t=setTimeout(()=>el.classList.remove('show'), 900);
+      };
+    })();
+
+    function collectFormData(){
+      const data = {};
+      $$('input[name], select[name], textarea[name]').forEach(el => data[el.name] = el.value);
+
+      data.optionRows = $$('#optionBody tr').map(tr => ({
+        name: $('input[name="oName"]', tr)?.value || '',
+        price: $('input[name="oPrice"]', tr)?.value || ''
+      }));
+
+      data.budgetRows = $$('#budgetBody tr').map(tr => ({
+        cat: $('select[name="bCat"]', tr)?.value || '',
+        item: $('input[name="bItem"]', tr)?.value || '',
+        cost: $('input[name="bCost"]', tr)?.value || '',
+        qty: $('input[name="bQty"]', tr)?.value || ''
+      }));
+
+      data.openSteps = $$('details.card').map(d => ({ step:d.dataset.step, open:d.open }));
+      return data;
+    }
+
+    function applyFormData(data){
+      if(!data) return;
+
+      $$('input[name], select[name], textarea[name]').forEach(el=>{
+        if(data[el.name] !== undefined) el.value = data[el.name];
+      });
+
+      if(Array.isArray(data.optionRows)){
+        $('#optionBody').innerHTML = '';
+        data.optionRows.forEach(r => addOptionRow(r, false));
+      }
+
+      if(Array.isArray(data.budgetRows) && data.budgetRows.length){
+        $('#budgetBody').innerHTML='';
+        data.budgetRows.forEach(r=>addBudgetRow(r, false));
+      }
+
+      if(Array.isArray(data.openSteps)){
+        data.openSteps.forEach(s=>{
+          const d = $(`details.card[data-step="${s.step}"]`);
+          if(d) d.open = !!s.open;
+        });
+      }
+
+      syncOtherFields();
+      formatAllCommaInputs();
+      autoGrowAllTextareas();
+      updateBudget();
+    }
+
+    function save(msg){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collectFormData()));
+      toast(msg || '자동 저장됨');
+    }
+    function load(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      try{ applyFormData(JSON.parse(raw)); }catch(e){}
+    }
+
+    function toggleOther(selectEl, otherEl){
+      const isOther = (selectEl.value === '기타');
+      otherEl.classList.toggle('hidden', !isOther);
+      if(!isOther) otherEl.value = '';
+    }
+    function syncOtherFields(){
+      toggleOther($('#industrySel'), $('#industryOther'));
+      toggleOther($('#targetSel'), $('#targetOther'));
+    }
+
+    function addCommas(numStr){
+      const s = String(numStr).replace(/[^\d]/g,'');
+      if(!s) return '';
+      return Number(s).toLocaleString('ko-KR');
+    }
+    function formatCommaInput(el){
+      el.value = addCommas(el.value);
+    }
+    function formatAllCommaInputs(){
+      $$('input[data-format="comma"]').forEach(el => formatCommaInput(el));
+      $$('#budgetBody input[data-format="comma"], #optionBody input[data-format="comma"]').forEach(el => formatCommaInput(el));
+    }
+
+    function autoGrow(el){
+      if(!el) return;
+      el.style.height = 'auto';
+      el.style.overflow = 'hidden';
+      el.style.height = (el.scrollHeight + 6) + 'px';
+    }
+    function bindAutoGrow(el){
+      if(!el) return;
+      const handler = ()=>{
+        requestAnimationFrame(()=>autoGrow(el));
+        save();
+      };
+      el.addEventListener('input', handler);
+      el.addEventListener('change', handler);
+      setTimeout(()=>autoGrow(el), 0);
+    }
+    function autoGrowAllTextareas(){
+      $$('textarea.field').forEach(t=>autoGrow(t));
+    }
+
+    function optionRowTemplate(row={}){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input class="field" name="oName" placeholder="예: 옵션 추가" value="${(row.name||'').replaceAll('"','&quot;')}" /></td>
+        <td class="right"><input class="field mono num" name="oPrice" data-format="comma" inputmode="numeric" placeholder="예: 숫자 입력" value="${row.price||''}" /></td>
+        <td class="right col-action"><button type="button" class="no-capture" data-role="delOpt">삭제</button></td>
+      `;
+      const priceEl = $('input[name="oPrice"]', tr);
+      priceEl.addEventListener('input', ()=>{ formatCommaInput(priceEl); save(); });
+      $('input[name="oName"]', tr).addEventListener('input', ()=>save());
+      $('[data-role="delOpt"]', tr).addEventListener('click', ()=>{ tr.remove(); save(); });
+      formatCommaInput(priceEl);
+      return tr;
+    }
+    function addOptionRow(row={}, doSave=true){
+      $('#optionBody').appendChild(optionRowTemplate(row));
+      if(doSave) save();
+    }
+
+    function budgetRowTemplate(row={}){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <select class="field" name="bCat">
+            <option value="">선택</option>
+            <option ${row.cat==='사업장 확보'?'selected':''}>사업장 확보</option>
+            <option ${row.cat==='인력 고용'?'selected':''}>인력 고용</option>
+            <option ${row.cat==='마케팅'?'selected':''}>마케팅</option>
+            <option ${row.cat==='시설 장비'?'selected':''}>시설 장비</option>
+            <option ${row.cat==='유지비'?'selected':''}>유지비</option>
+          </select>
+        </td>
+        <td><input class="field" name="bItem" placeholder="예: 세부 내용 입력" value="${(row.item||'').replaceAll('"','&quot;')}" /></td>
+        <td class="right"><input class="field mono num" name="bCost" data-format="comma" inputmode="numeric" placeholder="0" value="${row.cost||''}"/></td>
+        <td class="right"><input class="field mono num" name="bQty" inputmode="numeric" placeholder="1" value="${row.qty||''}"/></td>
+        <td class="right"><strong class="mono" data-role="rowSum">0원</strong></td>
+        <td class="right col-action"><button type="button" class="no-capture" data-role="delRow">삭제</button></td>
+      `;
+
+      const costEl = $('input[name="bCost"]', tr);
+      const qtyEl  = $('input[name="bQty"]', tr);
+
+      costEl.addEventListener('input', ()=>{ formatCommaInput(costEl); updateBudget(); save(); });
+      qtyEl.addEventListener('input', ()=>{ updateBudget(); save(); });
+
+      $('input[name="bItem"]', tr).addEventListener('input', ()=>save());
+      $('select[name="bCat"]', tr).addEventListener('input', ()=>{ updateBudget(); save(); });
+
+      $('[data-role="delRow"]', tr).addEventListener('click', ()=>{ tr.remove(); updateBudget(); save(); });
+
+      formatCommaInput(costEl);
+      return tr;
+    }
+    function addBudgetRow(row={}, doSave=true){
+      $('#budgetBody').appendChild(budgetRowTemplate(row));
+      updateBudget();
+      if(doSave) save();
+    }
+
+    function updateBudget(){
+      const seed = toNum($('[name="seedMoney"]').value);
+      let total = 0;
+
+      $$('#budgetBody tr').forEach(tr=>{
+        const cost = toNum($('input[name="bCost"]', tr).value);
+        const qty  = Math.max(0, toNum($('input[name="bQty"]', tr).value));
+        const sum  = cost * qty;
+        $('[data-role="rowSum"]', tr).textContent = fmtWon(sum);
+        total += sum;
+      });
+
+      const remain = seed - total;
+
+      $('#budgetTotal').textContent  = fmtWon(total);
+      $('#budgetRemain').textContent = fmtWon(remain);
+      $('#budgetRemainManwon').textContent = fmtManwon(remain);
+
+      renderPieSvg();
+    }
+
+    function polarToCartesian(cx, cy, r, a){
+      return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+    }
+    function arcPath(cx, cy, r, startAngle, endAngle){
+      const start = polarToCartesian(cx, cy, r, startAngle);
+      const end   = polarToCartesian(cx, cy, r, endAngle);
+      const large = (endAngle - startAngle) > Math.PI ? 1 : 0;
+      return `M ${cx} ${cy} L ${start.x} ${start.y} A ${r} ${r} 0 ${large} 1 ${end.x} ${end.y} Z`;
+    }
+    function renderPieSvg(){
+      const wrap = $('#pieSvgWrap');
+      const sums = {'사업장 확보':0,'인력 고용':0,'마케팅':0,'시설 장비':0,'유지비':0};
+
+      $$('#budgetBody tr').forEach(tr=>{
+        const cat = $('select[name="bCat"]', tr).value;
+        const cost = toNum($('input[name="bCost"]', tr).value);
+        const qty = toNum($('input[name="bQty"]', tr).value);
+        const sum = cost * (qty||0);
+        if(sums[cat] !== undefined) sums[cat] += sum;
+      });
+
+      const entries = Object.entries(sums).filter(([,v])=>v>0);
+      const total = entries.reduce((a,[,v])=>a+v,0);
+
+      if(total<=0){
+        wrap.innerHTML = `
+          <div style="height:320px;display:grid;place-items:center;color:#94a3b8;font-weight:980;">
+            예산 입력시 차트 표시
+          </div>`;
+        return;
+      }
+
+      const palette = ['#2563eb','#22c55e','#f59e0b','#a855f7','#ef4444','#06b6d4'];
+      const W = 320, H = 320, cx = W/2, cy = H/2, r = 120, rHole = 70;
+      let start = -Math.PI/2;
+
+      const slices = entries.map(([label, value], i)=>{
+        const angle = (value/total) * Math.PI*2;
+        const end = start + angle;
+        const d = arcPath(cx, cy, r, start, end);
+        const color = palette[i % palette.length];
+        start = end;
+        const pct = Math.round((value/total)*100);
+        return { label, value, d, color, pct };
+      });
+
+      const legend = slices.map(s=>`
+        <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
+          <span style="width:10px;height:10px;border-radius:3px;background:${s.color};display:inline-block;"></span>
+          <span style="color:#475569;font-weight:980;font-size:12px;">${s.label} ${s.pct}%</span>
+        </div>
+      `).join('');
+
+      wrap.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr;gap:10px;">
+          <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;">
+            ${slices.map(s=>`<path d="${s.d}" fill="${s.color}"></path>`).join('')}
+            <circle cx="${cx}" cy="${cy}" r="${rHole}" fill="#ffffff"></circle>
+            <text x="${cx}" y="${cy-10}" text-anchor="middle" style="font-weight:980;font-size:14px;fill:#0f172a;font-family:ui-sans-serif,system-ui;">총 지출</text>
+            <text x="${cx}" y="${cy+14}" text-anchor="middle" style="font-weight:980;font-size:16px;fill:#1d4ed8;font-family:ui-sans-serif,system-ui;">${fmtWon(total)}</text>
+          </svg>
+          <div>${legend}</div>
+        </div>
+      `;
+    }
+
+    $('#btnExpandAll').addEventListener('click', ()=>{
+      $$('details.card').forEach(d=>d.open=true);
+      save();
+    });
+    $('#btnCollapseAll').addEventListener('click', ()=>{
+      $$('details.card').forEach(d=>d.open=false);
+      save();
+    });
+
+    $('#addOptionRow').addEventListener('click', ()=>addOptionRow({}));
+    $('#addBudgetRow').addEventListener('click', ()=>addBudgetRow({}));
+
+    $('#industrySel').addEventListener('change', ()=>{ syncOtherFields(); save(); });
+    $('#targetSel').addEventListener('change', ()=>{ syncOtherFields(); save(); });
+
+    $$('input[data-format="comma"]').forEach(el=>{
+      el.addEventListener('input', ()=>{
+        formatCommaInput(el);
+        updateBudget();
+        save();
+      });
+    });
+
+    $$('input[name], select[name]').forEach(el=>{
+      if(el.matches('[data-format="comma"]')) return;
+      el.addEventListener('input', ()=>save());
+    });
+
+    bindAutoGrow($('#competitorDiff'));
+    bindAutoGrow($('#biggestReason'));
+    bindAutoGrow($('#salesPlan'));
+
+    function addTextareaMirrors(){
+      $$('.ta-mirror').forEach(m => m.remove());
+      $$('textarea.field').forEach(ta=>{
+        const div = document.createElement('div');
+        div.className = 'ta-mirror';
+        div.textContent = ta.value || '';
+        ta.insertAdjacentElement('afterend', div);
+      });
+    }
+    function removeTextareaMirrors(){
+      $$('.ta-mirror').forEach(m => m.remove());
+    }
+
+    function safeFileName(name){
+      const raw = (name || '').trim();
+      const base = raw ? raw : 'startup_plan';
+      return base.replace(/[\\\/:*?"<>|]/g, '').replace(/\s+/g, '_').slice(0, 60);
+    }
+
+    async function elementToPngBlob(el){
+      autoGrowAllTextareas();
+      renderPieSvg();
+      addTextareaMirrors();
+
+      $$('input').forEach(x=> x.setAttribute('value', x.value));
+
+      const w = el.scrollWidth;
+      const h = el.scrollHeight;
+
+      const canvas = await html2canvas(el, {
+        scale: Math.min(2, window.devicePixelRatio || 1.5),
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        logging: false,
+        width: w,
+        height: h,
+        scrollX: 0,
+        scrollY: 0,
+        onclone: (doc) => {
+          doc.querySelectorAll('details summary').forEach(s=>{
+            s.style.background = '#ffffff';
+            s.style.backgroundImage = 'none';
+          });
+          doc.querySelectorAll('.card').forEach(c=>{
+            c.style.boxShadow = 'none';
+          });
+        }
+      });
+
+      removeTextareaMirrors();
+      return await new Promise(res => canvas.toBlob(res, 'image/png', 1));
+    }
+
+    function downloadBlob(blob, filename){
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    async function saveAsOneImage(){
+      try{
+        toast('이미지 생성 중…');
+
+        const openState = $$('details.card').map(d => d.open);
+        $$('details.card').forEach(d => d.open = true);
+
+        document.body.classList.add('capture-mode');
+
+        if (document.fonts && document.fonts.ready) {
+          try { await document.fonts.ready; } catch(e) {}
+        }
+
+        await new Promise(r => requestAnimationFrame(r));
+        await new Promise(r => setTimeout(r, 160));
+
+        const company = safeFileName($('#companyName').value);
+        const blob = await elementToPngBlob($('#appRoot'));
+
+        document.body.classList.remove('capture-mode');
+        $$('details.card').forEach((d,i)=> d.open = !!openState[i]);
+
+        if(!blob){ toast('이미지 생성 실패'); return; }
+        downloadBlob(blob, `${company}.png`);
+        toast('이미지 저장 완료');
+      } catch(e){
+        document.body.classList.remove('capture-mode');
+        toast('이미지 저장 실패');
+      }
+    }
+
+    $('#btnSaveImage').addEventListener('click', saveAsOneImage);
+
+    function resetAll(){
+      localStorage.removeItem(STORAGE_KEY);
+
+      $$('input[name], textarea[name]').forEach(el => el.value = '');
+      $$('select[name]').forEach(el => el.value = '');
+
+      $('#optionBody').innerHTML = '';
+      addOptionRow({name:'', price:''}, false);
+
+      $('#budgetBody').innerHTML = '';
+      addBudgetRow({cat:'', item:'', cost:'', qty:''}, false);
+
+      const seedEl = $('[name="seedMoney"]');
+      seedEl.value = '100,000,000';
+
+      syncOtherFields();
+      formatAllCommaInputs();
+      autoGrowAllTextareas();
+      updateBudget();
+      renderPieSvg();
+
+      $$('details.card').forEach(d => d.open = true);
+
+      toast('초기화 완료');
+    }
+
+    $('#btnReset').addEventListener('click', ()=>{
+      if(!confirm('작성 내용을 모두 지울까요? (이 기기에서만 삭제됩니다)')) return;
+      resetAll();
+    });
+
+    (function init(){
+      load();
+
+      if($$('#optionBody tr').length === 0) addOptionRow({name:'', price:''}, false);
+      if($$('#budgetBody tr').length === 0) addBudgetRow({cat:'', item:'', cost:'', qty:''}, false);
+
+      const seedEl = $('[name="seedMoney"]');
+      if(!seedEl.value.trim()) seedEl.value = '100,000,000';
+
+      syncOtherFields();
+      formatAllCommaInputs();
+      autoGrowAllTextareas();
+      updateBudget();
+      renderPieSvg();
+
+      save('불러오기 완료');
+    })();
+  </script>
+</body>
+</html>
