@@ -270,6 +270,15 @@
       background:#ffffff !important;
     }
 
+    /* ✅ 캡처 시 차트 영역 회색(그림자/스티키 렌더링 아티팩트) 제거 */
+    body.capture-mode .chart-card{
+      box-shadow:none !important;
+      position: static !important;  /* sticky 해제 */
+      top:auto !important;
+      background:#ffffff !important;
+    }
+
+
     .ta-mirror{
       width:100%;
       border-radius:12px;
@@ -935,6 +944,14 @@
           });
           doc.querySelectorAll('.card').forEach(c=>{
             c.style.boxShadow = 'none';
+          });
+
+            // ✅ 추가: 차트 카드도 캡처 복제본에서 그림자/스티키 제거
+          doc.querySelectorAll('.chart-card').forEach(c=>{
+            c.style.boxShadow = 'none';
+            c.style.position = 'static';
+            c.style.top = 'auto';
+            c.style.background = '#ffffff';
           });
         }
       });
